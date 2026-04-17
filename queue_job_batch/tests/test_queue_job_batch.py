@@ -108,7 +108,10 @@ class TestQueueJobBatchController(common.TransactionCase):
         )
 
         with mock.patch.object(batch_main.http, "request", SimpleNamespace(env=env)):
-            self.assertEqual("", RunJobBatchController().create_test_batch(size=0))
+            result = RunJobBatchController().create_test_batch(size=0)
+
+        self.assertEqual(200, result.status_code)
+        self.assertEqual("", result.get_data(as_text=True))
 
     def test_create_test_batch_returns_batch_summary(self):
         env = SimpleNamespace(
@@ -134,7 +137,8 @@ class TestQueueJobBatchController(common.TransactionCase):
                     batch_name="Batch smoke",
                 )
 
-        self.assertEqual("batch id: 42, jobs: 2", result)
+        self.assertEqual(200, result.status_code)
+        self.assertEqual("batch id: 42, jobs: 2", result.get_data(as_text=True))
         create_jobs.assert_called_once_with(
             env,
             size=2,
@@ -157,7 +161,9 @@ class TestQueueJobBatchWebclient(common.TransactionCase):
 
         fake_batches = [SimpleNamespace(id=1), SimpleNamespace(id=2)]
         fake_user = SimpleNamespace(_get_queue_job_batches=lambda: fake_batches)
-        fake_bus = SimpleNamespace(sudo=lambda: SimpleNamespace(_bus_last_id=lambda: 99))
+        fake_bus = SimpleNamespace(
+            sudo=lambda: SimpleNamespace(_bus_last_id=lambda: 99)
+        )
         fake_env = FakeEnv({"bus.bus": fake_bus})
         fake_env.user = fake_user
         fake_request = SimpleNamespace(env=fake_env)
