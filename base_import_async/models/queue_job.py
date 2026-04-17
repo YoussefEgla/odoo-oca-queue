@@ -1,7 +1,7 @@
 # Copyright 2017 ACSONE SA/NV
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
-from odoo import _, models
+from odoo import models
 
 
 class QueueJob(models.Model):
@@ -17,7 +17,7 @@ class QueueJob(models.Model):
         if not attachment:
             return None
         return {
-            "name": _("Attachment"),
+            "name": self.env._("Attachment"),
             "type": "ir.actions.act_window",
             "res_model": "ir.attachment",
             "view_mode": "form",

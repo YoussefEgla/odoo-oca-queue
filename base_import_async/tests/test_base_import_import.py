@@ -10,7 +10,7 @@ from odoo.tests.common import RecordCapturer, TransactionCase
 
 from odoo.addons.queue_job.tests.common import trap_jobs
 
-from ..models.base_import_import import OPT_USE_QUEUE
+from ..wizards.base_import_import import OPT_USE_QUEUE
 
 
 class TestBaseImportImport(TransactionCase):
