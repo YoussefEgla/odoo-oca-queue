@@ -6,6 +6,8 @@ from odoo.tools import mute_logger
 
 from odoo.addons.mail.tools.discuss import Store
 
+from ..controllers.main import RunJobBatchController
+
 
 class TestQueueJobBatchStoreData(common.TransactionCase):
     def test_init_store_data_sets_batch_globals(self):
@@ -47,3 +49,20 @@ class TestQueueJobBatchCreatePrivate(common.HttpCase):
                 },
             )
         self.assertEqual("odoo.exceptions.AccessError", str(cm.exception))
+
+
+class TestQueueJobBatchController(common.TransactionCase):
+    def test_create_test_batch_jobs_links_jobs_to_batch(self):
+        batch, job_uuids = RunJobBatchController._create_test_batch_jobs(
+            self.env,
+            size=3,
+            description="Batch smoke test",
+            batch_name="Batch smoke test",
+        )
+
+        jobs = self.env["queue.job"].search([("uuid", "in", job_uuids)])
+
+        self.assertEqual(3, len(job_uuids))
+        self.assertEqual(3, len(jobs))
+        self.assertEqual(3, batch.job_count)
+        self.assertEqual({batch.id}, set(jobs.mapped("job_batch_id").ids))
