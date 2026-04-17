@@ -192,9 +192,7 @@ class BaseImportImport(models.TransientModel):
         load_context = {
             "import_file": True,
             "tracking_disable": options.get("tracking_disable"),
-            "name_create_enabled_fields": options.get(
-                "name_create_enabled_fields", {}
-            ),
+            "name_create_enabled_fields": options.get("name_create_enabled_fields", {}),
             "import_set_empty_fields": options.get("import_set_empty_fields", []),
             "import_skip_records": options.get("import_skip_records", []),
         }

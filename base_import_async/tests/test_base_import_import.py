@@ -6,8 +6,9 @@ import datetime
 import uuid
 from unittest import mock
 
-from odoo.addons.queue_job.tests.common import trap_jobs
 from odoo.tests.common import RecordCapturer, TransactionCase
+
+from odoo.addons.queue_job.tests.common import trap_jobs
 
 from ..models.base_import_import import OPT_USE_QUEUE
 
@@ -58,10 +59,13 @@ class TestBaseImportImport(TransactionCase):
 
         self.assertCountEqual(result["messages"], [])
         self.assertEqual(len(capture.records), 2)
-        self.assertCountEqual(capture.records.mapped("email"), [
-            "partner1@example.com",
-            "partner2@example.com",
-        ])
+        self.assertCountEqual(
+            capture.records.mapped("email"),
+            [
+                "partner1@example.com",
+                "partner2@example.com",
+            ],
+        )
 
     def test_async_import_schedules_and_imports_records(self):
         import_wizard = self._create_import_wizard(
@@ -90,10 +94,13 @@ class TestBaseImportImport(TransactionCase):
                 trap.perform_enqueued_jobs()
 
         self.assertEqual(len(capture.records), 2)
-        self.assertCountEqual(capture.records.mapped("name"), [
-            "async partner 1",
-            "async partner 2",
-        ])
+        self.assertCountEqual(
+            capture.records.mapped("name"),
+            [
+                "async partner 1",
+                "async partner 2",
+            ],
+        )
 
     def test_async_import_uses_datetime_prevalidation(self):
         import_wizard = self.base_import.create({"res_model": self.res_partners._name})
@@ -102,9 +109,12 @@ class TestBaseImportImport(TransactionCase):
             with mock.patch.object(
                 type(import_wizard),
                 "_convert_import_data",
-                return_value=([
-                    [datetime.date(2026, 4, 17)],
-                ], ["name"]),
+                return_value=(
+                    [
+                        [datetime.date(2026, 4, 17)],
+                    ],
+                    ["name"],
+                ),
             ):
                 result = import_wizard.execute_import(
                     ["name"],
@@ -114,7 +124,9 @@ class TestBaseImportImport(TransactionCase):
 
         self.assertEqual(trap.jobs_count(), 0)
         self.assertEqual(len(result["messages"]), 1)
-        self.assertIn("does not accept date/time values", result["messages"][0]["message"])
+        self.assertIn(
+            "does not accept date/time values", result["messages"][0]["message"]
+        )
 
     def test_async_import_applies_fallback_values(self):
         import_wizard = self._create_import_wizard(
